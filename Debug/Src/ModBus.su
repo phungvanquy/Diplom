@@ -1,0 +1,11 @@
+ModBus.c:14:10:MBRegisterCount	4	static
+ModBus.c:19:6:AppendDatatoMBRegister	32	static
+ModBus.c:29:10:MBStartAddress	4	static
+ModBus.c:34:6:MBSendData	16	static
+ModBus.c:40:6:AppendCRCtoMBRegister	24	static
+ModBus.c:50:6:MBException	24	static
+ModBus.c:58:6:MBProcessRegisters	24	static
+ModBus.c:97:6:MBProcessBits	32	static
+ModBus.c:152:6:AppendBitsToRegisters	32	static
+ModBus.c:164:6:WriteToRegister	24	static
+ModBus.c:193:6:WriteToMultilRegisters	56	dynamic

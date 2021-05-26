@@ -1,0 +1,15 @@
+main.c:119:5:main	120	static
+main.c:411:6:SystemClock_Config	88	static
+main.c:455:13:MX_TIM2_Init	32	static
+main.c:500:13:MX_TIM3_Init	32	static
+main.c:545:13:MX_TIM4_Init	32	static
+main.c:590:13:MX_USART6_UART_Init	8	static
+main.c:623:13:MX_GPIO_Init	40	static
+main.c:684:6:HAL_UART_RxCpltCallback	16	static
+main.c:704:7:HAL_TIM_PeriodElapsedCallback	16	static
+main.c:878:7:delay_ms	24	static
+main.c:888:7:Lcd_display_parameter	16	static
+main.c:913:7:Process_GCode	10064	static
+main.c:952:7:Start_Motors_ByGCode	16	static
+main.c:1008:7:runMotor	16	static
+main.c:1053:6:Error_Handler	4	static

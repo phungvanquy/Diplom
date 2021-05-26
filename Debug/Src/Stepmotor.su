@@ -1,0 +1,2 @@
+Stepmotor.c:12:6:outport_motor	32	static
+Stepmotor.c:24:6:OneStep	24	static
