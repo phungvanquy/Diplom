@@ -87,6 +87,15 @@ volatile uint8_t countG;
 
 volatile int sensor_X, sensor_Y;	//*******sensor value***
 
+typedef enum{
+	None = 0,
+	Clockwise = 1,
+	AntiClockwise = 2
+
+}dirMotor_typedef;
+
+volatile dirMotor_typedef sensor_DirMotorX, sensor_DirMotorY;
+
 
 /* USER CODE END PV */
 
@@ -119,6 +128,9 @@ void runMotor(stepMotor_typeDef* motor, uint16_t steps, uint8_t dir);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	sensor_DirMotorX = None;
+	sensor_DirMotorY = None;
 
 	//*********** Set first-Mode: handle Mode **********
 	MODE = 0;
@@ -170,6 +182,8 @@ int main(void)
 	test[107] = (uint16_t*)&sensor_X;
 	test[108] = (uint16_t*)&sensor_Y;
 	test[109] = (uint16_t*)&isDrilling;
+	test[110] = (uint16_t*)&sensor_DirMotorX;
+	test[111] = (uint16_t*)&sensor_DirMotorY;
 
 
   /* USER CODE END 1 */
@@ -625,8 +639,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
@@ -639,6 +653,18 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, Motor2_Pin4_Pin|KeyBoard_7_Pin|KeyBoard_5_Pin|KeyBoard_6_Pin 
                           |Motor2_Pin3_Pin|LCD_DB4_Pin|Motor2_Pin1_Pin|Motor2_Pin2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LCD_DB5_Pin Motor1_Pin1_Pin Motor1_Pin2_Pin Motor1_Pin3_Pin 
                            Motor1_Pin4_Pin KeyBoard_8_Pin */
@@ -671,11 +697,30 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PB13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB14 */
+  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pin : KeyBoard_3_Pin */
   GPIO_InitStruct.Pin = KeyBoard_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(KeyBoard_3_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
@@ -874,6 +919,33 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (isDrilling == 1){
+		sensor_DirMotorX = None;
+		sensor_DirMotorY = None;
+		return;
+	}
+
+	if (GPIO_Pin == GPIO_PIN_0){
+
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) == 1){
+			sensor_DirMotorX = None;
+		}else{
+			sensor_DirMotorX = None;
+		}
+
+	}
+	else if (GPIO_Pin == GPIO_PIN_14)
+	{
+
+		if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13 == 1)){
+			sensor_DirMotorY = AntiClockwise;
+		}else{
+			sensor_DirMotorY = Clockwise;
+		}
+	}
+}
 
  void delay_ms(uint16_t ms)
  {
